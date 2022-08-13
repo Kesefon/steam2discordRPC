@@ -4,13 +4,16 @@ import time
 from pypresence import Client
 import requests
 
-
 client_id = '1007823600230879272'
 steam_id = '196062033'
 discord_rpc = Client(client_id)
-discord_rpc.start()
+while True:
+  try:
+    discord_rpc.start()
+    break
+  except ConnectionRefusedError:
+    time.sleep(5*60)
 discord_rpc.clear_activity()
-#TODO: wait for discord to start
 
 while True:
   response = requests.post('https://steam-chat.com/miniprofile/' + steam_id + '/json/')
