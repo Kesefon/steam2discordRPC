@@ -1,14 +1,26 @@
 #! /bin/env python3
-
+import json
+import os.path
 import time
 from pypresence import Client
 import requests
 
-client_id = '1007823600230879272'
-steam_id = '196062033'
-blacklist = ['945360']
+default_config = {
+  "client_id": '1007823600230879272',
+  "steam_id": 'YOURSTEAMACCOUNTIDHERE',
+  "blacklist": ['945360']
+}
 
-discord_rpc = Client(client_id)
+if not os.path.exists('config.json'):
+  configfile = open("config.json", "w")
+  json.dump(default_config, configfile)
+  configfile.close()
+
+configfile = open("config.json", "r")
+config = json.load(configfile)
+
+
+discord_rpc = Client(config['client_id'])
 while True:
   try:
     discord_rpc.start()
@@ -18,11 +30,11 @@ while True:
 discord_rpc.clear_activity()
 
 while True:
-  response = requests.post('https://steam-chat.com/miniprofile/' + steam_id + '/json/')
+  response = requests.post('https://steam-chat.com/miniprofile/' + config['steam_id'] + '/json/')
   try:
     print(response.json()["in_game"])
     appid = response.json()["in_game"]["logo"][46:-19]
-    if appid in blacklist:
+    if appid in config['blacklist']:
       discord_rpc.clear_activity()
       time.sleep(120)
     else:
