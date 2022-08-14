@@ -35,7 +35,8 @@ while True:
   try:
     print(response.json()["in_game"])
     appid = response.json()["in_game"]["logo"][46:-19]
-    if appid in config['blacklist']:
+    if appid in config['blacklist'] or response.json()["in_game"]["is_non_steam"]:
+      print('ignored')
       discord_rpc.clear_activity()
       time.sleep(120)
     else:
