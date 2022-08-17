@@ -34,7 +34,8 @@ while True:
   response = requests.post('https://steam-chat.com/miniprofile/' + config['steam_id'] + '/json/')
   try:
     print(response.json()["in_game"])
-    appid = response.json()["in_game"]["logo"][46:-19]
+    app_pos = response.json()["in_game"]["logo"].find("apps/")
+    appid = response.json()["in_game"]["logo"][app_pos + 5:-19]
     if appid in config['blacklist'] or response.json()["in_game"]["is_non_steam"]:
       print('ignored')
       discord_rpc.clear_activity()
@@ -45,7 +46,7 @@ while True:
       if state == "": state = None
       discord_rpc.set_activity(
         state = state,
-        large_image = response.json()["in_game"]["logo"],
+        large_image = 'https://cdn.cloudflare.steamstatic.com/steam/apps/' + appid + '/hero_capsule.jpg',
         details = response.json()["in_game"]["name"],
         buttons = [{"label": "Open Store Page", "url": "https://store.steampowered.com/app/" + appid}, {"label": "Launch Game", "url": "steam://run/" + appid}]
       )
